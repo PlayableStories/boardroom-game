@@ -1,4 +1,4 @@
-# Corporate Reign — Game Design Spec
+# Boardroom — Game Design Spec
 > Handoff document for Claude Code. Build a playable browser prototype.
 
 ---
@@ -13,7 +13,7 @@ Tone: dark satire. Real corporate scandals, fictional names. The player should f
 
 ## Tech Stack
 
-- **React** (Vite scaffold: `npm create vite@latest corporate-reign -- --template react`)
+- **React** (Vite scaffold: `npm create vite@latest boardroom -- --template react`)
 - **Framer Motion** — card drag, swipe detection, tilt-on-drag preview
 - **Zustand** — global game state (meters, deck, bombs, quarter counter)
 - **No UI library** — custom CSS, hand-crafted aesthetic
@@ -24,7 +24,7 @@ Tone: dark satire. Real corporate scandals, fictional names. The player should f
 ## Project Structure
 
 ```
-corporate-reign/
+boardroom/
 ├── src/
 │   ├── data/
 │   │   └── cards.json          # All card content
@@ -281,8 +281,8 @@ Show the ending type, a one-line cause, and the card count (how long they lasted
 ## Running Locally
 
 ```bash
-npm create vite@latest corporate-reign -- --template react
-cd corporate-reign
+npm create vite@latest boardroom -- --template react
+cd boardroom
 npm install framer-motion zustand
 npm run dev
 ```

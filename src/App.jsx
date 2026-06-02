@@ -17,7 +17,7 @@ function App() {
   return (
     <div className="game-root">
       <header className="game-header">
-        <h1 className="game-title">Corporate Reign</h1>
+        <h1 className="game-title">Boardroom</h1>
       </header>
       <MetersRow />
       <FlavorText />
