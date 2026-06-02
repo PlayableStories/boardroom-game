@@ -1,48 +1,11 @@
 import { create } from 'zustand'
-import cardsData from '../data/cards.json' with { type: 'json' }
+import content from '../lib/content.js'
 
-const METER_KEYS = ['shareholders', 'management', 'staff', 'image']
-const INITIAL_METERS = { shareholders: 50, management: 50, staff: 50, image: 50 }
-
-const ENDINGS = {
-  shareholders_0: {
-    name: 'Hostile Takeover',
-    epitaph: 'The board accepted the acquisition offer. You were not part of the deal.',
-  },
-  shareholders_100: {
-    name: 'Bubble Burst',
-    epitaph: 'The investigation began on a Tuesday. By Thursday, you were trending.',
-  },
-  management_0: {
-    name: 'Board Coup',
-    epitaph: "A unanimous vote. They didn't even tell you in person.",
-  },
-  management_100: {
-    name: 'Autocracy',
-    epitaph: 'They all left on the same day. Nobody sent a resignation email.',
-  },
-  staff_0: {
-    name: 'Great Resignation',
-    epitaph: 'The offices emptied in three weeks. The ping-pong table remained.',
-  },
-  staff_100: {
-    name: 'Quiet Quitting',
-    epitaph: 'Everyone smiled. Nobody worked. The quarterly targets were missed by 40%.',
-  },
-  image_0: {
-    name: 'PR Collapse',
-    epitaph: 'The hashtag trended for nine days. The advertisers left on day two.',
-  },
-  image_100: {
-    name: 'Overexposure',
-    epitaph: 'The documentary was actually very well made. That was the problem.',
-  },
-}
-
-const DECK_EXHAUST_ENDING = {
-  name: 'Out of Crises',
-  epitaph: 'You ran out of cards. The world ran out of patience.',
-}
+const cardsData = content.cards
+const METER_KEYS = content.meters.map((m) => m.id)
+const INITIAL_METERS = Object.fromEntries(METER_KEYS.map((k) => [k, 50]))
+const ENDINGS = content.endings
+const DECK_EXHAUST_ENDING = content.deckExhaust
 
 function clamp(v) {
   return Math.max(0, Math.min(100, v))

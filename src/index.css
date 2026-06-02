@@ -1,21 +1,4 @@
 :root {
-  --bg: #0e0d0b;
-  --bg-glow: #16130d;
-  --card: #f5f0e8;
-  --card-edge: #e3dccd;
-  --ink: #1a1614;
-  --ink-on-dark: #f5f0e8;
-  --muted: #8a847b;
-  --muted-deep: #5a544c;
-
-  --accent-shareholders: #d4a534;
-  --accent-management: #c94c4c;
-  --accent-staff: #4ca89a;
-  --accent-image: #4c7ac9;
-
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-mono: 'DM Mono', ui-monospace, Consolas, monospace;
-
   color-scheme: dark;
   color: var(--ink-on-dark);
   font-family: var(--font-mono);

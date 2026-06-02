@@ -1,9 +1,11 @@
-export const METER_DEFS = [
-  { id: 'shareholders', name: 'Shareholders', icon: '💰', accent: 'var(--accent-shareholders)' },
-  { id: 'management', name: 'Management', icon: '🏢', accent: 'var(--accent-management)' },
-  { id: 'staff', name: 'Staff', icon: '😊', accent: 'var(--accent-staff)' },
-  { id: 'image', name: 'Public Image', icon: '🌍', accent: 'var(--accent-image)' },
-]
+import content from './content.js'
+
+export const METER_DEFS = content.meters.map((m) => ({
+  id: m.id,
+  name: m.name,
+  icon: m.icon,
+  accent: `var(--accent-${m.id})`,
+}))
 
 export function meterZone(value) {
   if (value <= 10 || value >= 90) return 'danger'
