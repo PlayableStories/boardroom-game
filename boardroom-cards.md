@@ -1,4 +1,4 @@
-# Corporate Reign — Initial Card Deck (18 Cards)
+# Boardroom — Initial Card Deck (18 Cards)
 > Paste this content into `src/data/cards.json` exactly as structured below.
 > All 18 cards cover six real-world-inspired arcs, three cards each.
 
