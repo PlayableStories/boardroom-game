@@ -70,7 +70,8 @@ All edits in this group are strings or numbers inside `.json` / `.jsx` / `.js` f
 |---|---|---|
 | Browser tab title | `index.html` | line 7, `<title>` |
 | On-screen game title (top of page) | `src/App.jsx` | line 20, `<h1>` |
-| Package name | `package.json` | line 2, `"name"` field (also update `package-lock.json` — the name appears twice at the top) |
+
+(The `name` field in `package.json` is a cosmetic / tooling identifier — see A6, optional.)
 
 ### A2. The four meter names
 
@@ -165,6 +166,12 @@ const DECK_EXHAUST_ENDING = {
 - Line 20: `Play Again` — the restart button label.
 
 **File: `src/lib/meters.js`, `formatDelta` (lines 14–18)** — the `+` / `−` / `±0` prefixes shown on the meter preview chips during a drag. Trivial swap if you'd rather use `▲` / `▼` / `=`, or words.
+
+### A6. Tooling identity (optional)
+
+The `name` field in `package.json` (line 2) is the npm package identifier. It shows up in IDE workspace headers and `npm` CLI output, but it is **not visible to the player** — the running game never reads it. Change it only if you want your fork's tooling identity to match the theme.
+
+If you do change it, run `npm install` afterwards — the `name` field in `package-lock.json` resyncs automatically. No hand-edit needed.
 
 ---
 
@@ -271,12 +278,12 @@ Copy this into your fork's PR description and tick as you go.
 ### Group A — text & content
 
 - [ ] Game title in `index.html` (line 7) and `src/App.jsx` (line 20)
-- [ ] `name` field in `package.json` (line 2) and `package-lock.json` (lines 2 + 8)
 - [ ] Four meter `name`s in `src/lib/meters.js` (leave `id`s alone unless doing the full cascade)
 - [ ] Every card's `text`, `flavor`, `left/right.label`, `character.name`/`role`/`avatarInitials` in `src/data/cards.json`
 - [ ] All 8 endings + the deck-exhaust ending in `src/store/gameStore.js`
 - [ ] `GameOver.jsx` strings ("Play Again", "You lasted…") if you want non-default copy
 - [ ] (Optional) `formatDelta` `+` / `−` / `±0` prefixes in `src/lib/meters.js`
+- [ ] (Optional) `name` in `package.json` — cosmetic only; run `npm install` afterwards to resync `package-lock.json`
 
 ### Group B — visual identity
 
