@@ -1,307 +1,271 @@
 # Forking Boardroom
 
-Boardroom is a small, opinionated, Reigns-style swipe card game. This document is for **forkers who want to re-skin it** — keep the mechanics, swap the theme. A medieval kingdom. A school principal. A starship captain. Pick a setting, follow this guide, ship a complete game.
+Boardroom is a small, opinionated, Reigns-style swipe card game. This document is for **forkers who want to re-skin it** — keep the mechanics, swap the theme.
 
-If you instead want to **rebuild from scratch with AI assistance** using this repo as a structural reference, that's a separate path (Level 2) and not covered here — see `boardroom-spec.md` and `boardroom-cards.md` in the root.
+Everything player-facing lives in **two files**:
 
-## What "Level 1" means
+| File | What's in it | Who edits it |
+|---|---|---|
+| **`src/content.md`** | All text: title, meter names, characters, 22 cards, 9 endings, UI strings | Writers, designers, game designers |
+| **`src/theme.css`** | All visuals: palette, meter accent colors, character avatar colors, fonts | Designers, themers |
 
-You will change **strings, colors, emoji, and the deck**. You will not change JavaScript control flow. The game's mechanics — meter clamps, swipe handling, bomb timing, chain triggers, the every-fourth-card quarterly rhythm, the eight ending categories — stay exactly as they are.
+Both are plain text. No JSON braces, no JavaScript. The dev server hot-reloads on save.
 
-The customization surface is split into two groups so you can ship in two passes:
+If you instead want to **rebuild from scratch with AI assistance** using this repo as a structural reference, that's a separate path (Level 2) — see `boardroom-spec.md` and `boardroom-cards.md` in the root.
 
-- **Group A — Text & content.** Rewrite everything the player reads. Ship a fully themed re-skin with the default look.
-- **Group B — Visual identity.** Swap palette, fonts, emoji icons, favicon. Ship a fully retitled visual brand.
-
-You can do A first and stop, do B first and stop, or do both. There is no order dependency.
-
-### Recommended workflow
+## Workflow
 
 ```bash
 git clone <your fork>
 cd boardroom-game
 npm install
-npm run dev          # localhost:5173, hot reload
-# ... edit per the sections below ...
+npm run dev          # localhost:5173, hot-reload
+# Edit src/content.md and/or src/theme.css
 npm run build        # production build sanity check
-node scripts/validate-cards.mjs   # checks the deck stays internally consistent
+node scripts/validate-content.mjs   # checks content stays internally consistent
 ```
 
 ---
 
-## Project tree
+## `src/content.md` — the text
 
-Legend: 📝 = Group A (text/content) · 🎨 = Group B (visual) · — = Level 2 (mechanics, leave alone)
+One file. Sections marked by `#` headings. Edit values in place, save, hot-reload.
 
-```
-boardroom-game/
-├── index.html                    # 📝 <title>   🎨 favicon, Google Fonts
-├── package.json                  # 📝 project name
-├── public/
-│   └── favicon.svg               # 🎨 swap the file
-├── src/
-│   ├── App.jsx                   # 📝 on-screen <h1>
-│   ├── App.css                   # — layout + animations
-│   ├── index.css                 # 🎨 palette + meter accent + font CSS variables
-│   ├── data/
-│   │   └── cards.json            # 📝 card text / labels / flavor / character names
-│   │                             # 🎨 character.accentColor (per card)
-│   ├── lib/
-│   │   └── meters.js             # 📝 meter names    🎨 meter icons + accent ref
-│   ├── store/
-│   │   └── gameStore.js          # 📝 8 endings + deck-exhaust ending strings
-│   │                             # — everything else (mechanics)
-│   └── components/
-│       ├── GameOver.jsx          # 📝 "Play Again" + "You lasted N cards"
-│       ├── CardStack.jsx         # 🎨 ✕ / ✓ swipe glyphs
-│       ├── CharacterPortrait.jsx # — renders character fields from card data
-│       ├── MeterBar.jsx, MetersRow.jsx, FlavorText.jsx   # — fully data-driven
-```
+### Sections
 
----
+```markdown
+# Title
 
-## Group A — Text & content
+Boardroom              ← change to your game's title
 
-All edits in this group are strings or numbers inside `.json` / `.jsx` / `.js` files. No CSS, no images, no fonts.
+# Meters
 
-### A1. Game title
+| ID | Icon | Name |       ← four meters; rename `Name` (the player-visible label)
+|---|---|---|              and `Icon` (any emoji). Don't change `ID`s.
+| shareholders | 💰 | Shareholders |
+| management   | 🏢 | Management   |
+| staff        | 😊 | Staff        |
+| image        | 🌍 | Public Image |
 
-| What | File | Where |
-|---|---|---|
-| Browser tab title | `index.html` | line 7, `<title>` |
-| On-screen game title (top of page) | `src/App.jsx` | line 20, `<h1>` |
+# Characters
 
-(The `name` field in `package.json` is a cosmetic / tooling identifier — see A6, optional.)
+| ID | Name | Role | Initials |    ← character roster. One row per character.
+|---|---|---|---|                     The `ID` is referenced by cards below.
+| the-chair | The Chair | Board Representative | CH |
+| the-hr-director | The HR Director | People Operations | HR |
+| ... 11 rows total
 
-### A2. The four meter names
+# Endings
 
-**File: `src/lib/meters.js`, lines 1–6** — the `METER_DEFS` array.
+## shareholders_0 — Hostile Takeover     ← `<meterId>_<0 or 100>` then em-dash
+                                            and the ending name.
+The board accepted the acquisition       ← prose below is the epitaph.
+offer. You were not part of the deal.
 
-```js
-export const METER_DEFS = [
-  { id: 'shareholders', name: 'Shareholders',  icon: '💰', accent: 'var(--accent-shareholders)' },
-  { id: 'management',   name: 'Management',    icon: '🏢', accent: 'var(--accent-management)' },
-  { id: 'staff',        name: 'Staff',         icon: '😊', accent: 'var(--accent-staff)' },
-  { id: 'image',        name: 'Public Image',  icon: '🌍', accent: 'var(--accent-image)' },
-]
-```
+## shareholders_100 — Bubble Burst
+...
 
-- **Safe to edit:** `name` (this is the on-screen label).
-- `icon` is technically text but reads as visual identity — handled in Group B.
-- `accent` is a CSS variable reference — handled in Group B.
-- **⚠️ Leave `id` alone** unless you're prepared to do a full cascade rename — see Friction §1 below.
+## deck_exhaust — Out of Crises          ← the 9th ending: survived all cards.
+You ran out of cards. The world ran
+out of patience.
 
-### A3. Cards
+# UI
 
-**File: `src/data/cards.json`** — one array of 22 cards.
-
-Current deck breakdown:
-
-| Type | Count | What it is |
-|---|---|---|
-| `character` | 10 | Normal deck cards. Drawn in shuffled order. |
-| `bomb` | 7 | Triggered cards. A character/chain card "plants" them, they detonate N cards later. |
-| `chain` | 3 | Direction-triggered follow-ups. Appear immediately after a specific swipe direction on a parent card. |
-| `quarterly` | 2 | Auto-drawn every fourth card. Cross-cutting board-level dilemmas. |
-
-Per card, **these fields are pure Group A** (edit freely on any card type):
-
-- `text` — the main decision text shown on the card.
-- `left.label`, `right.label` — the swipe choice labels (the things that fade in as you tilt the card).
-- `flavor` — the one-line outcome shown briefly after the swipe.
-- `character.name`, `character.role`, `character.avatarInitials` (always 2 chars).
-- `arc` — a thematic grouping tag. Used for organization. No game logic looks at it.
-- `left.effects.<meterId>`, `right.effects.<meterId>` — integer deltas applied to each meter on swipe. Rebalancing is allowed but changes difficulty.
-
-**⚠️ Do not change** any of:
-
-- `id` (referenced by other cards via `plant_bomb`, `chain`, `unlocks_chain`).
-- `type` (decides which draw rules apply).
-- `chain` (parent-id pointer on chain cards).
-- `chainTrigger` (`'left'` or `'right'` — required on chain cards).
-- `plant_bomb`, `bomb_delay`, `unlocks_chain` — these wire the bomb / chain plumbing.
-
-`character.accentColor` is Group B (B4 below).
-
-After editing, run `node scripts/validate-cards.mjs` — it catches dangling references and shape errors.
-
-### A4. Endings
-
-**File: `src/store/gameStore.js`, lines 7–45** — the `ENDINGS` map plus the deck-exhaust ending.
-
-Eight endings, one per meter-extreme combination:
-
-| Key | Triggered when |
+| Key | Text |
 |---|---|
-| `shareholders_0`, `shareholders_100` | Shareholders meter hits 0 / 100 |
-| `management_0`, `management_100` | Management meter hits 0 / 100 |
-| `staff_0`, `staff_100` | Staff meter hits 0 / 100 |
-| `image_0`, `image_100` | Public Image meter hits 0 / 100 |
+| playAgain          | Play Again         |
+| youLastedSingular  | You lasted 1 card. |
+| youLastedPlural    | You lasted {n} cards. |
+| leftGlyph          | ✕                  |
+| rightGlyph         | ✓                  |
 
-Each is `{ name, epitaph }`. Both strings are Group A — fully editable. Example:
+# Cards
 
-```js
-shareholders_0: {
-  name: 'Hostile Takeover',
-  epitaph: 'The board accepted the acquisition offer. You were not part of the deal.',
-},
+## bro-001                              ← card id (must be unique)
+
+- **Type**: character                   ← character | bomb | chain | quarterly
+- **Arc**: bro_culture                  ← thematic tag, no game logic
+- **Character**: the-hr-director        ← references a row in `# Characters`
+
+> An engineer has filed a harassment    ← prompt shown to the player.
+> complaint against her team lead...      blockquote (`>`), can be multiple lines
+
+### Left → Approve the transfer         ← left choice label
+- shareholders: +5                      ← effect on each meter
+- management: 0
+- staff: -15
+- image: 0
+- Plants bomb: bro-bomb-001 after 8 cards   ← optional: triggers a delayed bomb
+
+### Right → Investigate properly        ← right choice label
+- shareholders: -8
+- management: 0
+- staff: +12
+- image: +10
+
+*The transfer was approved. She moved   ← flavor (italic) shown briefly
+teams. He got a performance bonus.*       after the swipe.
 ```
 
-Plus one deck-exhaust ending (lines 42–45), triggered when the player survives all cards without breaking a meter:
+### Card format reference
 
-```js
-const DECK_EXHAUST_ENDING = {
-  name: 'Out of Crises',
-  epitaph: 'You ran out of cards. The world ran out of patience.',
+Every card has:
+- `## <card-id>` — heading 2 with a unique id
+- `- **Type**: <type>` — one of `character`, `bomb`, `chain`, `quarterly`
+- `- **Arc**: <arc-tag>` — thematic grouping (no game logic)
+- `- **Character**: <character-id>` — references the Character roster
+- `> <prompt>` — the card text shown to the player
+- `### Left → <label>` and `### Right → <label>` — both choices with effects
+- `*<flavor>*` — italic flavor shown after the swipe
+
+Optional fields:
+- `- **Chain parent**: <card-id>` — for chain cards: which card precedes them
+- `- **Chain trigger**: <left|right>` — for chain cards: which swipe direction triggers them
+- `- Plants bomb: <card-id> after <N> cards` — schedules a bomb to detonate N cards later
+- `- Unlocks chain: <card-id>` — shuffles a chain card into the deck
+
+### What you can change freely
+
+- Title, meter names + icons, all ending names + epitaphs, all UI strings
+- Every card's prompt text, choice labels, character reference, flavor, arc tag
+- Effect numbers (changes difficulty; the game stays valid)
+- Add or remove cards (run the validator to make sure references resolve)
+
+### What to leave alone
+
+- Card `Type` field (decides which draw rules apply)
+- `Chain parent` / `Chain trigger` / `Plants bomb` / `Unlocks chain` plumbing
+- Meter IDs in the `# Meters` table — see Friction §1 below
+
+---
+
+## `src/theme.css` — the visuals
+
+One CSS file. CSS custom properties only. Edit hex values in place.
+
+```css
+:root {
+  /* ---- Page palette ---- */
+  --bg:           #0e0d0b;   /* page background */
+  --bg-glow:      #16130d;   /* top radial glow */
+  --card:         #f5f0e8;   /* card surface */
+  --card-edge:    #e3dccd;   /* card bottom gradient edge */
+  --ink:          #1a1614;   /* text on cards */
+  --ink-on-dark:  #f5f0e8;   /* text on dark background */
+  --muted:        #8a847b;   /* secondary text */
+  --muted-deep:   #5a544c;   /* tertiary text */
+
+  /* ---- Meter accent colors ----
+   * Variable name must match the meter `id` from content.md.
+   */
+  --accent-shareholders: #d4a534;
+  --accent-management:   #c94c4c;
+  --accent-staff:        #4ca89a;
+  --accent-image:        #4c7ac9;
+
+  /* ---- Character avatar colors ----
+   * Variable name must match the character `id` from content.md
+   * (prefix `--char-` + the slug id).
+   */
+  --char-the-chair:               #c9a84c;
+  --char-the-hr-director:         #4ca89a;
+  --char-the-journalist:          #c94c4c;
+  /* ... one per character ... */
+
+  /* ---- Fonts ---- */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono:  'DM Mono', ui-monospace, Consolas, monospace;
 }
 ```
 
-**⚠️ The `meterId_0` / `meterId_100` key shape is structural** — see Friction §1 if you also want to rename a meter id.
+### What you can change freely
 
-### A5. UI button & outcome strings
+- Any hex color
+- Font family names (also update the `<link>` tags in `index.html` so the browser downloads the new face — see below)
 
-**File: `src/components/GameOver.jsx`** — the game-over overlay text:
+### Coupling to content.md
 
-- Line 17: `You lasted {cardIndex} {cardIndex === 1 ? 'card' : 'cards'}.` — the run-length sentence + singular/plural form.
-- Line 20: `Play Again` — the restart button label.
+Three sets of CSS variables must stay in sync with `content.md`:
 
-**File: `src/lib/meters.js`, `formatDelta` (lines 14–18)** — the `+` / `−` / `±0` prefixes shown on the meter preview chips during a drag. Trivial swap if you'd rather use `▲` / `▼` / `=`, or words.
+| Pattern | Drives | Must match |
+|---|---|---|
+| `--accent-<meter-id>` | Meter bar fill, swipe direction tint | A row in `# Meters` |
+| `--char-<character-id>` | Character avatar circle | A row in `# Characters` |
 
-### A6. Tooling identity (optional)
+The validator (`scripts/validate-content.mjs`) checks that every meter and character has a matching CSS variable. If you add a character to `content.md`, add `--char-<their-id>: #hex;` to `theme.css`.
 
-The `name` field in `package.json` (line 2) is the npm package identifier. It shows up in IDE workspace headers and `npm` CLI output, but it is **not visible to the player** — the running game never reads it. Change it only if you want your fork's tooling identity to match the theme.
+### Fonts
 
-If you do change it, run `npm install` afterwards — the `name` field in `package-lock.json` resyncs automatically. No hand-edit needed.
+Swapping the font family is a two-file edit:
+
+1. Replace the `--font-serif` / `--font-mono` value in `theme.css`.
+2. Replace the matching Google Font `<link>` URLs in `index.html` (so the browser downloads the new family).
 
 ---
 
-## Group B — Visual identity
+## Validation
 
-All edits in this group are CSS variables, image files, or short emoji swaps. No prose changes.
+Run these four checks before committing your re-skin:
 
-### B1. Color palette
-
-**File: `src/index.css`, lines 2–9** — base palette CSS custom properties.
-
-| Variable | Purpose |
-|---|---|
-| `--bg`, `--bg-glow` | Page background + radial glow on top of it |
-| `--card`, `--card-edge` | Card surface + bottom gradient edge |
-| `--ink`, `--ink-on-dark` | Text color on cards (dark on cream) / text on dark background (cream on dark) |
-| `--muted`, `--muted-deep` | Secondary and tertiary text |
-
-### B2. Meter accent colors
-
-**File: `src/index.css`, lines 11–14** — four CSS variables matched 1:1 to meter ids.
-
-```css
---accent-shareholders: #d4a534;
---accent-management:   #c94c4c;
---accent-staff:        #4ca89a;
---accent-image:        #4c7ac9;
+```bash
+npm run build                        # production build still works
+npm run lint                         # source still passes lint
+node scripts/validate-content.mjs    # content.md is well-formed; cross-refs resolve
+node scripts/test-store.mjs          # game mechanics still pass (12 tests)
+node scripts/test-ui-logic.mjs       # meter zones + delta formatting (7 tests)
 ```
 
-These drive each meter's fill color, the pulsing-warning / flashing-danger animations on extreme values, and the swipe-direction tint on the choice labels (left = `--accent-management` red, right = `--accent-staff` teal in the default theme — see `src/App.css`).
-
-### B3. Meter icons (emoji)
-
-**File: `src/lib/meters.js`, lines 2–5** — the `icon` field on each `METER_DEFS` entry. Any emoji or short glyph works.
-
-### B4. Character avatar colors
-
-**File: `src/data/cards.json`** — `character.accentColor` (hex string) on each card. Drives the colored circle behind the character's initials.
-
-**Note:** characters are currently duplicated per card — see Friction §2.
-
-### B5. Swipe symbols
-
-**File: `src/components/CardStack.jsx`, lines 63–67** — the `✕` (left) and `✓` (right) glyphs that prefix the choice labels.
-
-```jsx
-<motion.span className="choice-label choice-left" style={{ opacity: noOpacity }}>
-  ✕ {card.left?.label}
-</motion.span>
-<motion.span className="choice-label choice-right" style={{ opacity: yesOpacity }}>
-  {card.right?.label} ✓
-</motion.span>
-```
-
-Swap with any single-character glyph or short word.
-
-### B6. Fonts
-
-Two places to change in lockstep:
-
-- **CSS variables in `src/index.css` lines 16–17** — `--font-serif`, `--font-mono`.
-- **Google Font `<link>` tags in `index.html` lines 8–17** — the URLs that load Playfair Display and DM Mono.
-
-Update both. If you only swap the CSS variable, the browser falls back to the system serif/mono.
-
-### B7. Favicon
-
-Replace **`public/favicon.svg`**. Referenced from `index.html` line 5. Any SVG works; PNG also works if you also update the `type` attribute and filename in the `<link>`.
+The content validator catches:
+- Malformed `content.md` structure (missing sections, bad headings)
+- Card character references that don't resolve
+- Bomb / chain / unlock references that don't resolve
+- Missing meter or character CSS variables in `theme.css`
+- Missing endings (you must have all 8 `meterId_0` / `meterId_100` + `deck_exhaust`)
 
 ---
 
 ## Known friction
 
-These are present-day rough edges, not blockers. Surfacing them so you know what you're getting into. A future repo change may smooth some of them.
+The earlier version of this guide listed five friction points. The two-file refactor resolved character duplication and hardcoded UI strings. What remains:
 
-1. **Renaming a meter id is a cascade, not a single edit.** The four lowercase ids (`shareholders`, `management`, `staff`, `image`) appear in:
-   - `src/lib/meters.js` — `METER_DEFS` (1 occurrence)
-   - `src/store/gameStore.js` — `METER_KEYS` (line 4), `INITIAL_METERS` (line 5), and the 8 `ENDINGS` keys (`<id>_0` and `<id>_100`)
-   - `src/data/cards.json` — every card's `left.effects` and `right.effects` keys (~44 occurrences across 22 cards)
-   - `src/index.css` — the matching `--accent-<id>` CSS variable
+1. **Renaming a meter id is a cascade** — though smaller than before. The four lowercase ids (`shareholders`, `management`, `staff`, `image`) appear in:
+   - `content.md` — `# Meters` table + every card's effect bullets (~176 occurrences across 22 cards)
+   - `content.md` — the 8 ending headings (`shareholders_0`, etc.)
+   - `theme.css` — the `--accent-<id>` variables
+   - Safe approach: pick a new lowercase id, find-and-replace exact-string repo-wide, then run `node scripts/validate-content.mjs` to catch stragglers.
 
-   The safe approach: pick a single exact lowercase string, find-and-replace repo-wide, then run `git grep '<old-id>'` and confirm zero matches before building.
+2. **The quarterly rhythm is hardcoded.** "Every fourth card draws a quarterly" lives as `nextIndex % 4 === 0` in `src/store/gameStore.js`. Changing the cadence is a one-character JS edit — Level 2.
 
-2. **Characters are inlined per card.** Each card has its own copy of `character.name` / `role` / `avatarInitials` / `accentColor`. If "The Chair" appears on five cards, that's five separate copies. Renaming her means editing each occurrence. There is no central character registry today.
+3. **Meter zone thresholds are hardcoded.** Warning at 20/80 and danger at 10/90 live in `meterZone` at `src/lib/meters.js`. Adjusting these is a JS edit — Level 2.
 
-3. **A few player-facing strings are hardcoded in JSX, not data.**
-   - `src/components/GameOver.jsx` — `"Play Again"` (line 20) and the `"You lasted N card(s)"` template (line 17).
-   - `src/components/CardStack.jsx` — the `✕` and `✓` glyphs (lines 64, 67).
+4. **Card schema is enforced by the validator.** Editing existing field values is safe. Adding *new* fields or renaming the shape will trip the validator and you'll need to update both the parser and the validator — Level 2.
 
-   They're trivial to edit but they don't live in `cards.json` or any JSON config — they're inline in the React components.
-
-4. **The quarterly rhythm is hardcoded.** "Every fourth card draws a quarterly" lives as `nextIndex % 4 === 0` in `src/store/gameStore.js` line 221. Changing the cadence is a one-character JS edit, which crosses into Level 2.
-
-5. **Meter zone thresholds are hardcoded.** The warning band (≤20 / ≥80) and danger band (≤10 / ≥90) live in `meterZone` at `src/lib/meters.js` lines 8–12. Adjusting these is a JS edit — Level 2.
-
-6. **`scripts/validate-cards.mjs` enforces the card schema.** Editing existing field *values* is safe. Adding *new* fields or renaming the shape will trip the validator and you'll need to update it — Level 2.
+5. **Favicon is a separate file.** Replace `public/favicon.svg` (referenced from `index.html` line 5). Not part of `theme.css` since it's a binary asset.
 
 ---
 
 ## Re-skin checklist
 
-Copy this into your fork's PR description and tick as you go.
+A copy-paste checklist for your fork's PR description.
 
-### Group A — text & content
+### Text re-skin (`src/content.md`)
+- [ ] Title
+- [ ] Four meter names + icons (leave ids alone unless doing the full rename cascade)
+- [ ] Character roster names + roles + initials (leave ids alone)
+- [ ] All 22 card prompts, labels, flavor, character references
+- [ ] All 8 endings + `deck_exhaust`
+- [ ] UI strings (`playAgain`, `youLasted*`, glyphs)
 
-- [ ] Game title in `index.html` (line 7) and `src/App.jsx` (line 20)
-- [ ] Four meter `name`s in `src/lib/meters.js` (leave `id`s alone unless doing the full cascade)
-- [ ] Every card's `text`, `flavor`, `left/right.label`, `character.name`/`role`/`avatarInitials` in `src/data/cards.json`
-- [ ] All 8 endings + the deck-exhaust ending in `src/store/gameStore.js`
-- [ ] `GameOver.jsx` strings ("Play Again", "You lasted…") if you want non-default copy
-- [ ] (Optional) `formatDelta` `+` / `−` / `±0` prefixes in `src/lib/meters.js`
-- [ ] (Optional) `name` in `package.json` — cosmetic only; run `npm install` afterwards to resync `package-lock.json`
+### Visual re-skin (`src/theme.css`)
+- [ ] Page palette (`--bg`, `--card`, `--ink`, etc.)
+- [ ] Four meter accent colors
+- [ ] Character avatar colors (one `--char-<id>` per roster entry)
+- [ ] (Optional) Fonts — update `--font-*` AND the `<link>` URLs in `index.html`
 
-### Group B — visual identity
-
-- [ ] Base palette CSS variables in `src/index.css` (`--bg`, `--card`, `--ink`, `--muted`, etc.)
-- [ ] Four meter accent CSS variables in `src/index.css`
-- [ ] Meter `icon` emoji in `src/lib/meters.js`
-- [ ] Each card's `character.accentColor` in `src/data/cards.json`
-- [ ] (Optional) `✕` / `✓` swipe glyphs in `src/components/CardStack.jsx`
-- [ ] (Optional) `--font-*` vars in `src/index.css` + Google Font `<link>` URLs in `index.html`
-- [ ] Replace `public/favicon.svg`
-
-### Final checks (run before merging your re-skin)
-
-- [ ] `npm run build` exits 0
-- [ ] `npm run lint` exits 0
-- [ ] `node scripts/validate-cards.mjs` reports `✅ 22 cards valid`
-- [ ] `node scripts/test-store.mjs` reports `12 passed, 0 failed`
-- [ ] Play a full run locally and trigger at least one ending
+### Other
+- [ ] (Optional) Replace `public/favicon.svg`
+- [ ] (Optional) `name` in `package.json` — cosmetic, not visible to players
+- [ ] Run all 5 validation commands above; all green
 
 ---
 

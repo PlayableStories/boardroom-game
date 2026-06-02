@@ -9,6 +9,7 @@ import {
 } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
 import { dragX as globalDragX } from '../store/dragX'
+import content from '../lib/content.js'
 import CharacterPortrait from './CharacterPortrait'
 
 const SWIPE_THRESHOLD = 120
@@ -61,10 +62,10 @@ function CardView({ card, onSwipe }) {
       <div className="card-divider" />
       <div className="card-choices">
         <motion.span className="choice-label choice-left" style={{ opacity: noOpacity }}>
-          ✕ {card.left?.label}
+          {content.ui.leftGlyph} {card.left?.label}
         </motion.span>
         <motion.span className="choice-label choice-right" style={{ opacity: yesOpacity }}>
-          {card.right?.label} ✓
+          {card.right?.label} {content.ui.rightGlyph}
         </motion.span>
       </div>
     </motion.article>

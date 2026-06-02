@@ -1,0 +1,49 @@
+/* ============================================================
+ * Boardroom theme
+ *
+ * Edit values below to retheme the game without touching JS.
+ * The dev server hot-reloads on save.
+ * ============================================================ */
+
+:root {
+  /* ---- Page palette ---- */
+  --bg:           #0e0d0b; /* page background */
+  --bg-glow:      #16130d; /* top radial glow */
+  --card:         #f5f0e8; /* card surface (cream) */
+  --card-edge:    #e3dccd; /* card bottom gradient edge */
+  --ink:          #1a1614; /* text on cards */
+  --ink-on-dark:  #f5f0e8; /* text on dark background */
+  --muted:        #8a847b; /* secondary text */
+  --muted-deep:   #5a544c; /* tertiary text */
+
+  /* ---- Meter accent colors ----
+   * Variable name must match the meter `id` from content.md.
+   */
+  --accent-shareholders: #d4a534; /* gold */
+  --accent-management:   #c94c4c; /* red */
+  --accent-staff:        #4ca89a; /* teal */
+  --accent-image:        #4c7ac9; /* blue */
+
+  /* ---- Character avatar colors ----
+   * Variable name must match the character `id` from content.md
+   * (prefix `--char-` + the slug id).
+   */
+  --char-the-chair:               #c9a84c;
+  --char-the-hr-director:         #4ca89a;
+  --char-the-journalist:          #c94c4c;
+  --char-the-legal-counsel:       #c94c4c;
+  --char-the-cfo:                 #c9a84c;
+  --char-the-head-of-engineering: #4c7ac9;
+  --char-the-head-of-rd:          #c94c4c;
+  --char-the-head-of-operations:  #4ca89a;
+  --char-the-regulator:           #c94c4c;
+  --char-the-whistleblower:       #888070;
+  --char-the-ceo:                 #888070;
+
+  /* ---- Fonts ----
+   * If you swap font families, also update the Google Font <link> tags
+   * in index.html so the browser actually downloads the new face.
+   */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono:  'DM Mono', ui-monospace, Consolas, monospace;
+}

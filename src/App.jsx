@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useGameStore } from './store/gameStore'
+import content from './lib/content.js'
 import MetersRow from './components/MetersRow'
 import CardStack from './components/CardStack'
 import FlavorText from './components/FlavorText'
@@ -17,7 +18,7 @@ function App() {
   return (
     <div className="game-root">
       <header className="game-header">
-        <h1 className="game-title">Boardroom</h1>
+        <h1 className="game-title">{content.title}</h1>
       </header>
       <MetersRow />
       <FlavorText />
