@@ -11,7 +11,7 @@ Everything player-facing lives in **two files**:
 
 Both are plain text. No JSON braces, no JavaScript. The dev server hot-reloads on save.
 
-If you instead want to **rebuild from scratch with AI assistance** using this repo as a structural reference, that's a separate path (Level 2) — see `boardroom-spec.md` and `boardroom-cards.md` in the root.
+If you instead want to **rebuild from scratch with AI assistance** using this repo as a structural reference, that's a separate path (Level 2) — see [REFERENCE_PROMPT.md](./REFERENCE_PROMPT.md) for a ready-to-paste prompt and platform notes.
 
 ## Workflow
 
@@ -269,4 +269,4 @@ A copy-paste checklist for your fork's PR description.
 
 ---
 
-Issues and PRs welcome at the upstream repo: <https://github.com/WWStoryMode/boardroom-game>.
+Issues and PRs welcome at the upstream repo: <https://github.com/PlayableStories/boardroom-game>.
